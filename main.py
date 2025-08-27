@@ -16,6 +16,33 @@ import pyaudio
 import audioop
 import wave
 
+from random import randint
+
+def count_anek():
+	i=0
+	with open('anek.txt', 'r', encoding='utf-8') as file:
+	    for line in file:  # итерация по файлу построчно
+	        if line == '???\n':
+	            i += 1
+	return i
+
+
+anek_count = count_anek()
+def get_anek():
+    an_list = []
+    file_path = 'anek.txt'
+    i = 0
+    rand = randint(1, anek_count)
+    with open(file_path, 'r', encoding='utf-8') as file:
+        for line in file:  # итерация по файлу построчно
+            if line == '???\n':
+                i += 1
+
+            if i == rand and line != '???\n':
+                an_list.append(line.strip())
+
+    return "\n".join(an_list)  # собираем список в строку
+
 def dynamic_user_filter():
     async def func(_, __, m):
         return m.from_user and m.from_user.id in id
@@ -54,7 +81,7 @@ def add_user(_, msg):
 		us = app.get_users(username)
 		if us.id not in id:
 			with open('id.txt', 'a', encoding='utf-8') as file:
-				file.write(f"{us.username} {us.id}\n")
+				file.write(f"\n{us.username} {us.id}\n")
 			create_id()  # обновляем список сразу
 			msg.reply(f"Добавлен: {us.username} ({us.id})")
 	except Exception as e:
@@ -77,8 +104,8 @@ def type(_, msg):
 					if finding in line:
 						line = line.replace(finding, "")
 					f.write(line)
-					create_id()
 				msg.reply(f"Видалено: {us.username} ({us.id})")
+		create_id()
 	except Exception as e:
 		msg.reply(f"Ошибка: {e}")
 
@@ -177,6 +204,12 @@ def type(_, msg):
 @app.on_message(filters.command("list", prefixes=".") & dynamic_user_filter())
 def type(_, msg):
 	app.send_document(msg.chat.id,'id.txt')
+
+# комманда anek
+@app.on_message(filters.command("anek", prefixes=".") & dynamic_user_filter())
+def type(_, msg):
+	an_list=get_anek()
+	app.send_message(msg.chat.id, an_list)
 
 #help
 @app.on_message(filters.command("help", prefixes=".") & dynamic_user_filter())
