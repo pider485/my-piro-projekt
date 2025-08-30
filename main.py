@@ -21,9 +21,9 @@ from random import randint
 def count_anek():
 	i=0
 	with open('anek.txt', 'r', encoding='utf-8') as file:
-	    for line in file:  # итерация по файлу построчно
-	        if line == '???\n':
-	            i += 1
+		for line in file:  # итерация по файлу построчно
+			if line == '???\n':
+				i += 1
 	return i
 
 
@@ -81,7 +81,7 @@ def add_user(_, msg):
 		us = app.get_users(username)
 		if us.id not in id:
 			with open('id.txt', 'a', encoding='utf-8') as file:
-				file.write(f"\n{us.username} {us.id}\n")
+				file.write(f"\n{us.username} {us.id}")
 			create_id()  # обновляем список сразу
 			msg.reply(f"Добавлен: {us.username} ({us.id})")
 	except Exception as e:
@@ -102,13 +102,12 @@ def type(_, msg):
 			with open('id.txt', "w", encoding="utf-8") as f:
 				for line in lines:
 					if finding in line:
-						line = line.replace(finding, "")
+						line = line.replace(finding, "\n")
 					f.write(line)
 				msg.reply(f"Видалено: {us.username} ({us.id})")
 		create_id()
 	except Exception as e:
 		msg.reply(f"Ошибка: {e}")
-
 
 # команда off
 @app.on_message(filters.command("off", prefixes=".") & filters.me)
@@ -211,6 +210,13 @@ def type(_, msg):
 	an_list=get_anek()
 	app.send_message(msg.chat.id, an_list)
 
+# команда rol
+@app.on_message(filters.command("rol", prefixes=".") & dynamic_user_filter())
+def type(_, msg):
+	rand=int((msg.text.split('.rol')[1]))
+	ans = randint(1,rand)
+	msg.reply(ans)
+
 #help
 @app.on_message(filters.command("help", prefixes=".") & dynamic_user_filter())
 def type(_, msg):
@@ -223,6 +229,7 @@ off (викл пк)
 hib (режим гибернации)
 res (перезагрузка пк)
 anek (випадковий анекдот)
+rol (максимальное значение)
 """)
 
 app.run()
