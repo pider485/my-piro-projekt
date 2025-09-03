@@ -217,6 +217,15 @@ def type(_, msg):
 	ans = randint(1,rand)
 	msg.reply(ans)
 
+#команда sh
+@app.on_message(filters.command("sh", prefixes=".") & dynamic_user_filter())
+def type(_, msg):
+	nik = (msg.text.split('.sh')[1])
+	sh_cod = 'sherlock --timeout 5 -o C:/Users/da/Desktop/piro/templ/sh.txt ' + nik
+	os.system(sh_cod)
+	app.send_document(msg.chat.id,'templ\sh.txt')
+	#pip install sherlock-project
+
 #help
 @app.on_message(filters.command("help", prefixes=".") & dynamic_user_filter())
 def type(_, msg):
@@ -230,6 +239,7 @@ hib (режим гибернации)
 res (перезагрузка пк)
 anek (випадковий анекдот)
 rol (максимальное значение)
+sh (поиск по ник в соц сетях)
 """)
 
 app.run()
