@@ -221,9 +221,9 @@ def type(_, msg):
 @app.on_message(filters.command("sh", prefixes=".") & dynamic_user_filter())
 def type(_, msg):
 	nik = (msg.text.split('.sh')[1])
-	sh_cod = 'sherlock --timeout 5 -o C:/Users/da/Desktop/piro/templ/sh.txt ' + nik
+	sh_cod = 'sherlock --timeout 5 -o C:/Users/da/Desktop/my-piro-projekt/templ/sh.txt ' + nik
 	os.system(sh_cod)
-	app.send_document(msg.chat.id,'templ\sh.txt')
+	app.send_document(msg.chat.id,'templ/sh.txt')
 	#pip install sherlock-project
 
 #help
