@@ -12,9 +12,11 @@ import mss
 import math
 import re
 
-import pyaudio
-import audioop
-import wave
+# import pyaudio
+# import audioop
+# import wave
+
+
 
 from random import randint
 
@@ -154,50 +156,50 @@ def type(_, msg):
 		pass
 
 # aud
-@app.on_message(filters.command("aud", prefixes=".") & dynamic_user_filter())
-def type(_, msg):
-	seconds = int(msg.text.split(' ')[1])
-	volume = 5
-	try:
-		volume = int(msg.text.split(' ')[2])
-	except:
-		pass
-	CHUNK = 1024
-	FORMAT = pyaudio.paInt16
-	CHANNELS = 1
-	RATE = 44100
-	RECORD_SECONDS = seconds
-	WAVE_OUTPUT_FILENAME = "templ/output.mp3"
+# @app.on_message(filters.command("aud", prefixes=".") & dynamic_user_filter())
+# def type(_, msg):
+# 	seconds = int(msg.text.split(' ')[1])
+# 	volume = 5
+# 	try:
+# 		volume = int(msg.text.split(' ')[2])
+# 	except:
+# 		pass
+# 	CHUNK = 1024
+# 	FORMAT = pyaudio.paInt16
+# 	CHANNELS = 1
+# 	RATE = 44100
+# 	RECORD_SECONDS = seconds
+# 	WAVE_OUTPUT_FILENAME = "templ/output.mp3"
 	
-	p = pyaudio.PyAudio()
-	stream = p.open(format=FORMAT,
-					channels=CHANNELS,
-					rate=RATE,
-					input=True,
-					input_device_index=1,
-					frames_per_buffer=CHUNK)
+# 	p = pyaudio.PyAudio()
+# 	stream = p.open(format=FORMAT,
+# 					channels=CHANNELS,
+# 					rate=RATE,
+# 					input=True,
+# 					input_device_index=1,
+# 					frames_per_buffer=CHUNK)
 	
-	print("* recording")
-	frames = []
-	for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
-		data = stream.read(CHUNK)
-		# Увеличиваем громкость (коэф. 2.0 = в 2 раза громче)
-		louder = audioop.mul(data, 2, volume)  # (данные, ширина сэмпла, коэффициент)
-		frames.append(louder)
+# 	print("* recording")
+# 	frames = []
+# 	for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+# 		data = stream.read(CHUNK)
+# 		# Увеличиваем громкость (коэф. 2.0 = в 2 раза громче)
+# 		louder = audioop.mul(data, 2, volume)  # (данные, ширина сэмпла, коэффициент)
+# 		frames.append(louder)
 	
-	print("* done recording")
-	stream.stop_stream()
-	stream.close()
-	p.terminate()
+# 	print("* done recording")
+# 	stream.stop_stream()
+# 	stream.close()
+# 	p.terminate()
 	
-	wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
-	wf.setnchannels(CHANNELS)
-	wf.setsampwidth(p.get_sample_size(FORMAT))
-	wf.setframerate(RATE)
-	wf.writeframes(b''.join(frames))
-	wf.close()
+# 	wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
+# 	wf.setnchannels(CHANNELS)
+# 	wf.setsampwidth(p.get_sample_size(FORMAT))
+# 	wf.setframerate(RATE)
+# 	wf.writeframes(b''.join(frames))
+# 	wf.close()
 	
-	app.send_voice(msg.chat.id, voice='templ/output.mp3')
+# 	app.send_voice(msg.chat.id, voice='templ/output.mp3')
 
 #list
 @app.on_message(filters.command("list", prefixes=".") & dynamic_user_filter())
@@ -226,13 +228,31 @@ def type(_, msg):
 	app.send_document(msg.chat.id,'templ/sh.txt')
 	#pip install sherlock-project
 
+# команда timer
+@app.on_message(filters.command("timer", prefixes=".") & dynamic_user_filter())
+def type(_, msg):
+	time=int((msg.text.split('.timer')[1]))
+	for i in range(time, 0, -1):
+		try:
+			m=int(i/60)
+			if m != 0:
+				i=i-(m*60)
+			h=int(m/60)
+			if h != 0:
+				m=m-(h*60)
+			msg.edit(f"Осталось: {h}:{m}:{i}")
+			sleep(1)
+		except FloodWait as e:
+			sleep(e.x)
+	msg.edit("конец")
+
+
 #help
-@app.on_message(filters.command("help", prefixes=".") & dynamic_user_filter())
+@app.on_message(filters.command("help", prefixes=".") & filters.me)
 def type(_, msg):
 	msg.reply("""
 scr (№ екрана)
 calk (ваш пример)
-aud (длина записи в С.) (громкость по умолчанию 5)
 list просмотр вайт листа
 off (викл пк)
 hib (режим гибернации)
@@ -240,6 +260,7 @@ res (перезагрузка пк)
 anek (випадковий анекдот)
 rol (максимальное значение)
 sh (поиск по ник в соц сетях)
+timer (секунди)
 """)
-
+#aud (длина записи в С.) (громкость по умолчанию 5)
 app.run()
